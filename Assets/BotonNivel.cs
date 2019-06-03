@@ -7,18 +7,30 @@ public class BotonNivel : MonoBehaviour {
 
     [HideInInspector] public int nivel = 0;
     public Sprite nivelBloqueado;
+    public Image star;
+    
 
     public void AsignarNivel(int level)
     {
         //Comprobar si este nivel esta desbloqueado
         //En funcion de esto, cambiar imagen y stats
-        if (!Game.currentGame.playedLevels.ContainsKey(level)) //Creo que es key y no value
+        if (!Game.currentGame.playedLevels.ContainsKey(level))
         {
             GetComponent<Button>().enabled = false; //No carga nivel 
             GetComponent<Image>().sprite = nivelBloqueado;
         }
         else
         {
+            Game.currentGame.stats.stars = Game.currentGame.playedLevels[level].stars;
+            for (int i = 1; i <= Game.currentGame.stats.stars; i++)
+            {
+                Image newobj = Instantiate(star);
+                newobj.transform.SetParent(this.gameObject.transform);
+                int posX = (i < 2) ? -1 : 1;
+                if (i == 2) posX = 0;
+                newobj.rectTransform.localScale = new Vector3(1, 1, 0);
+                newobj.rectTransform.localPosition = new Vector3(posX * 30, -30, 0);
+            }
             nivel = level;
             GetComponentInChildren<Text>().text = nivel.ToString();
         }
@@ -26,6 +38,7 @@ public class BotonNivel : MonoBehaviour {
 
     public void CargarNivel()
     {
+        Debug.Log("NIVEL: " + nivel);
         LevelManager.instance.CargarNivel(nivel);
     }
 }

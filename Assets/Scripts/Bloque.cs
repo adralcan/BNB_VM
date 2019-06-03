@@ -45,7 +45,6 @@ public class Bloque : MonoBehaviour
             LevelManager.instance.listaBloques.Remove(this);
             Destroy(gameObject);
             Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
-            Debug.Log("PUNTUACION: " + Level.currentLevel.score + "COMBO: " + LevelManager.instance.combo);
             LevelManager.instance.combo++;
             Level.currentLevel.AddStar(LevelManager.instance.combo);
             if (LevelManager.instance.listaBloques.Count <= 0)
@@ -114,7 +113,6 @@ public class Bloque : MonoBehaviour
                 LevelManager.instance.listaBloques.Remove(this);
                 Destroy(gameObject);
                 Level.currentLevel.score += (10 + (10*LevelManager.instance.combo));
-                Debug.Log("Puntos: " + Level.currentLevel.score);
                 LevelManager.instance.combo++;
                 Level.currentLevel.AddStar(LevelManager.instance.combo);
                 if (LevelManager.instance.listaBloques.Count <= 0)

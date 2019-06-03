@@ -10,12 +10,21 @@ public class Game {
 
     // Las clases que queramos serializar
     // public Niveles nivelesJugados;
-    public Dictionary<int, int> playedLevels;
+    [System.Serializable]
+    public struct Puntuacion
+    {
+        public int score;
+        public int stars;
+    };
+
+    public Puntuacion stats;
+
+    public Dictionary<int, Puntuacion> playedLevels;
     public int monedas;
 
     public Game()
     {
-        playedLevels = new Dictionary<int, int>();
+        playedLevels = new Dictionary<int, Puntuacion>();
         monedas = 0;
     }
 	

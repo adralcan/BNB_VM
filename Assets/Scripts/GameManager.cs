@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
         instance = this;
         // Serializacion
         if (SaveLoad.Load()) {
-            level = Game.currentGame.playedLevels.Keys.Last();
+            level = ;
         }
 
         DontDestroyOnLoad(this.gameObject);

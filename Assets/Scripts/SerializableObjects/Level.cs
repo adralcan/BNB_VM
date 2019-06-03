@@ -17,6 +17,12 @@ public class Level
         score = 0;
         stars = 0;
     }
+    public Level(int levelID, int score)
+    {
+        this.levelID = levelID;
+        this.score = score;
+        stars = 0;
+    }
 
     public void AddStar(int combo)
     {
@@ -30,19 +36,16 @@ public class Level
                     if (score > maxScore * 0.2f)
                     {
                         stars++;
-                        Debug.Log("-----------------------------PRIMERA ESTRELLA " + Time.time + " con combo: " + combo);
                     }
                 }
                 else if (score > maxScore * 0.7f)
                 {
                     stars++;
-                    Debug.Log("-----------------------------SEGUNDA ESTRELLA " + Time.time + " con combo: " + combo);
                 }
             }
             else if (score > maxScore)
             {
                 stars++;
-                Debug.Log("-----------------------------TERCERA ESTRELLA " + Time.time + " con combo: " + combo);
 
             }
         }

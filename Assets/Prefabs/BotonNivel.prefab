@@ -145,6 +145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nivel: 0
   nivelBloqueado: {fileID: 21300000, guid: af2247537c7dbe94a9102655988dee7d, type: 3}
+  star: {fileID: 114411368335102640, guid: b0fe82401fd72ef43b6c610b16283950, type: 2}
 --- !u!114 &114590009609308532
 MonoBehaviour:
   m_ObjectHideFlags: 1
