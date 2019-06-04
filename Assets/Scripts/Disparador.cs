@@ -8,7 +8,8 @@ public class Disparador : MonoBehaviour
     public Material materialLineRenderer;
 
     public int fuerza = 5;
-    public int contBolas = 5;   
+    public int contBolas = 5;
+    private TextMesh bolasText;
 
     [HideInInspector] public Vector3 posicionAux; //Auxiliar para cuando la primera bola cambie la posicion del disparador
 
@@ -19,6 +20,13 @@ public class Disparador : MonoBehaviour
 
     Color c1 = Color.grey;
     Color c2 = Color.cyan;
+
+    private void Awake()
+    {
+        if (gameObject.GetComponentInChildren<TextMesh>() != null)
+            bolasText = gameObject.GetComponentInChildren<TextMesh>();
+        else Debug.Log("No se encontro texto del disparador");
+    }
 
     // Use this for initialization
     void Start()
@@ -106,13 +114,12 @@ public class Disparador : MonoBehaviour
             Vector3 pos = new Vector3(transform.position.x, transform.position.y, 0);            
             aux.Shoot(pos, direccion * fuerza * Time.deltaTime);
 
-            SetContBolas(contBolas);            
             yield return StartCoroutine(Disparar());
         }
         else        
             StopCoroutine(Disparar());            
         
-        SetContBolas(contBolas);
+        //SetContBolas(contBolas);
     }
 
     public void SetPosition(Vector3 pos)
@@ -123,8 +130,11 @@ public class Disparador : MonoBehaviour
 
     public void SetContBolas(int n)
     {
-        contBolas = n;       
-        gameObject.GetComponentInChildren<TextMesh>().text = n.ToString();        
+        contBolas = n;
+        //Vector3 aux = posicionAux;
+        //aux.y += 0.5f;
+        //bolasText.transform.position = aux;
+        bolasText.text = n.ToString();        
     }
 
     //Darle valor a la futura posicion cuando acabe el turno

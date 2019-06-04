@@ -46,12 +46,14 @@ public class Bloque : MonoBehaviour
             Destroy(gameObject);
             Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
             Debug.Log("PUNTUACION: " + Level.currentLevel.score + "COMBO: " + LevelManager.instance.combo);
+            
             LevelManager.instance.combo++;
             Level.currentLevel.AddStar(LevelManager.instance.combo);
             if (LevelManager.instance.listaBloques.Count <= 0)
             {
                 //Cambiar de nivel                
-                LevelManager.instance.SiguienteNivel();
+                //LevelManager.instance.SiguienteNivel();
+                LevelManager.instance.nivelCompletado = true;
             }
 
         }
@@ -115,12 +117,15 @@ public class Bloque : MonoBehaviour
                 Destroy(gameObject);
                 Level.currentLevel.score += (10 + (10*LevelManager.instance.combo));
                 Debug.Log("Puntos: " + Level.currentLevel.score);
+                Debug.Log("Barra puntos: " + (Level.currentLevel.score / Level.currentLevel.maxScore));
+                LevelManager.instance.pointsBar.fillAmount = Level.currentLevel.score / Level.currentLevel.maxScore;
                 LevelManager.instance.combo++;
                 Level.currentLevel.AddStar(LevelManager.instance.combo);
                 if (LevelManager.instance.listaBloques.Count <= 0)
                 {
                     //Cambiar de nivel                
-                    LevelManager.instance.SiguienteNivel();
+                    //LevelManager.instance.SiguienteNivel();
+                    LevelManager.instance.nivelCompletado = true;
                 }
 
             }
@@ -163,7 +168,8 @@ public class Bloque : MonoBehaviour
                 if (LevelManager.instance.listaBloques.Count <= 0)
                 {
                     //Cambiar de nivel                
-                    LevelManager.instance.SiguienteNivel();
+                    //LevelManager.instance.SiguienteNivel();
+                    LevelManager.instance.nivelCompletado = true;
                 }
 
             }
