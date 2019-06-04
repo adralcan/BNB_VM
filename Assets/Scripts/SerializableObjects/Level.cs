@@ -7,8 +7,8 @@ public class Level
     public static Level currentLevel; //Referencia estatica a una instancia de la clase
 
     public int levelID;
-    public int score;
-    public int maxScore;
+    public float score; //Lo necesito float para la barra de puntos
+    public float maxScore;
     public int stars;
 
     public Level()

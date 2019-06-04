@@ -2,26 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-
-//TODO: NO TERMINAR EL NIVEL HASTA QUE BAJEN TODAS LAS BOLAS
+using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance;
 
     //Objetos escena
+    [Header("Scene elements")]
     public Disparador Disparador;
     public DeadZone deadZone;
     public GameObject gameField;
     public GameObject backGround;
     public GameObject spriteDisparador;
+    public GameObject pauseMenu;
+    public Image pointsBar;
+    public Image accelerationIcon;
+    public float flashSpeed = 5;
 
     public Sprite sprite;
     [HideInInspector] public GameObject spriteField;
     GameObject muroIzquierdo;
     GameObject muroDerecho;
     GameObject muroArriba;
+
+    [Header("Camera settings")]
+    public float TARGET_WIDTH = 720.0f;
+    public float TARGET_HEIGHT = 1019.0f; //919 + 100 pixels extra
+    public int PIXELS_TO_UNITS = 30; // 1:1 ratio of pixels to units
 
     //Prefabs
     public GameObject muro;
@@ -43,6 +51,7 @@ public class LevelManager : MonoBehaviour
 
     [HideInInspector] public int combo = 0;
 
+    [HideInInspector] public bool nivelCompletado = false;
 
     // Use this for initialization
     void Start()
@@ -52,19 +61,28 @@ public class LevelManager : MonoBehaviour
         instance = this;
         iniciarObjetos();
         colocarObjetos();
+        if (accelerationIcon != null) { 
+            accelerationIcon.color = Color.clear;
+            accelerationIcon.gameObject.SetActive(true);
+        }
+        if (pointsBar != null)
+        {
+            pointsBar.fillAmount = 0;
+            pauseMenu.SetActive(false);
+        }
+        nivelCompletado = false;
 
 
         if (!SaveLoad.savedGame.playedLevels.ContainsKey(GameManager.instance.level)) {
-            
+            new Level();
             Level.currentLevel.levelID = GameManager.instance.level;
             Level.currentLevel.score = 0;
-            Game.currentGame.stats.score = Level.currentLevel.score;
+            Game.currentGame.stats.score = (int)Level.currentLevel.score;
             Game.currentGame.stats.stars = Level.currentLevel.stars;
             Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, Game.currentGame.stats);
         }
 
         else {
-            new Level();
             Debug.Log(GameManager.instance.level);
             Level.currentLevel.levelID = GameManager.instance.level;
             Level.currentLevel.score = SaveLoad.savedGame.playedLevels[GameManager.instance.level].score;
@@ -114,15 +132,18 @@ public class LevelManager : MonoBehaviour
                 BotonVolverSpawner();
             }
 
-            if (Input.GetKeyUp(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.R))
             {
                 ReiniciarNivel();
             }
 
-            if (Input.GetKeyUp(KeyCode.S))
+            if (Input.GetKeyDown(KeyCode.S))
             {
                 SiguienteNivel();
             }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+                TogglePause();
         }
         destruirObjetos();
     }
@@ -184,21 +205,52 @@ public class LevelManager : MonoBehaviour
     //Aceleramos las pelotas cada 6 segundos
     IEnumerator iniciarContador(int iteracion)
     {
-        yield return new WaitForSeconds(6);
-        
+        yield return new WaitForSeconds(5);
+
+        accelerationIcon.color = new Color(1, 1, 1, 0.7f);
+        StopCoroutine(aclararImagen());
+        StartCoroutine(aclararImagen());
+
         //Si aun quedan bolas desperdigadas de un disparo concreto, recogemos
         if (listaBolas.Count > 0 && numDisparos == iteracion)
         {            
             //Si alguna pelota está fuera del gameField, la hacemos volver
             for (int i = 0; i < listaBolas.Count; i++) {
-                if (!dentroPantalla(listaBolas[i].transform.position))
-                    listaBolas[i].MoveTo(Disparador.transform.position, 20, destruyePelota);
-                else
-                    listaBolas[i].GetRigidbody().velocity *= 1.5f; 
+                if (listaBolas[i].gameObject != null)
+                {
+                    if (!dentroPantalla(listaBolas[i].transform.position))
+                        listaBolas[i].MoveTo(Disparador.transform.position, 20, destruyePelota);
+                    else
+                    {
+                        listaBolas[i].GetRigidbody().velocity *= 1.5f;                        
+                    }
+                }
             }
 
             yield return iniciarContador(iteracion);            
         }
+    }
+
+    IEnumerator aclararImagen()
+    {
+        bool termino = false;        
+
+        while (!termino)
+        {
+            accelerationIcon.color = Color.Lerp(accelerationIcon.color, Color.clear, flashSpeed * Time.deltaTime);
+
+            if (accelerationIcon.color == Color.clear)
+            {                
+                termino = true;
+            }
+
+            yield return new WaitForFixedUpdate();
+        }
+
+        if (termino)
+            StopCoroutine(aclararImagen());
+
+        yield return new WaitForFixedUpdate();
     }
 
     public void llegadaPelota(Ball p)
@@ -225,6 +277,10 @@ public class LevelManager : MonoBehaviour
                 listaBloques[i].Descender(); //Descienden una posicion y comprueban si hay peligro (activar pantalla roja)
             }
             combo = 0;
+
+            //Pasamos de nivel cuando todas las bolas han llegado al origen de nuevo
+            if (nivelCompletado)
+                SiguienteNivel();
         }
     }
 
@@ -263,8 +319,7 @@ public class LevelManager : MonoBehaviour
                     Destroy(listaBolas[i].GetRigidbody()); //Destruimos rigidBody para que no colisione camino de vuelta
 
                 listaBolas[i].MoveTo(Disparador.transform.position, 10, destruyePelota);
-            }
-            //listaBolas.Clear();
+            }            
 
             //Hacemos pasar el turno descendiendo los bloques
             for (int i = 0; i < listaBloques.Count; i++)
@@ -291,10 +346,6 @@ public class LevelManager : MonoBehaviour
 
     void ResizeCamera()
     {
-        float TARGET_WIDTH = 720.0f;
-        float TARGET_HEIGHT = 1019.0f; //919 + 100 pixels extra
-        int PIXELS_TO_UNITS = 30; // 1:1 ratio of pixels to units
-
         float desiredRatio = TARGET_WIDTH / TARGET_HEIGHT;
         float currentRatio = (float)Screen.width / (float)Screen.height;
 
@@ -318,7 +369,7 @@ public class LevelManager : MonoBehaviour
         if (SaveLoad.savedGame.playedLevels.ContainsKey(GameManager.instance.level))
         {            
             if (SaveLoad.savedGame.playedLevels[GameManager.instance.level].score < Level.currentLevel.score) {
-                SaveLoad.savedGame.stats.score = Level.currentLevel.score;
+                SaveLoad.savedGame.stats.score = (int)Level.currentLevel.score;
                 SaveLoad.savedGame.stats.stars = Level.currentLevel.stars;
                 SaveLoad.savedGame.playedLevels[GameManager.instance.level] = SaveLoad.savedGame.stats;
                 SaveLoad.Save();
@@ -332,7 +383,7 @@ public class LevelManager : MonoBehaviour
         Level.currentLevel.levelID = GameManager.instance.level;
         Level.currentLevel.score = 0;
         Level.currentLevel.stars = 0;
-        Game.currentGame.stats.score = Level.currentLevel.score;
+        Game.currentGame.stats.score = (int)Level.currentLevel.score;
         Game.currentGame.stats.stars = Level.currentLevel.stars;
         Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, Game.currentGame.stats);
         Game.currentGame.monedas += 50;
@@ -353,6 +404,7 @@ public class LevelManager : MonoBehaviour
         
         Alertar(false);
         SceneManager.LoadScene("Juego", LoadSceneMode.Single);
+        Time.timeScale = 1;
     }
 
     public void CargarNivel(int nivel)
@@ -367,6 +419,30 @@ public class LevelManager : MonoBehaviour
 
         Alertar(false);
         SceneManager.LoadScene("Juego", LoadSceneMode.Single);
+    }
+
+    public void TogglePause()
+    {
+        bool aux = pauseMenu.activeSelf;
+        pauseMenu.SetActive(!aux);
+        if (aux)
+            Time.timeScale = 1;
+        else
+            Time.timeScale = 0;
+
+    }
+
+    public void IrMenuSeleccion()
+    {
+        Destroy(gameObject);
+        Destroy(GameManager.instance.gameObject);
+        SceneManager.LoadScene("Menu_Seleccion_Niveles");
+        Time.timeScale = 1;
+    }
+
+    public void SalirApplicacion()
+    {
+        Application.Quit();
     }
 }
 
