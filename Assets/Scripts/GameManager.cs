@@ -13,15 +13,11 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [HideInInspector] public bool anuncioActivo = false; //Si está activo, no hacemos caso al input
 
-    [HideInInspector] public int level = 1;
+    [HideInInspector] public int level  = 1;
 
     // Use this for initialization
     void Awake() {        
         instance = this;
-        // Serializacion
-        if (SaveLoad.Load()) {
-            level = ;
-        }
 
         DontDestroyOnLoad(this.gameObject);
     }

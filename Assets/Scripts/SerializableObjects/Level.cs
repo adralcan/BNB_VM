@@ -6,22 +6,25 @@ public class Level
 {
     public static Level currentLevel; //Referencia estatica a una instancia de la clase
 
-    public int levelID;
-    public float score; //Lo necesito float para la barra de puntos
+    public int levelID = 1;
+    public float score = 0; //Lo necesito float para la barra de puntos
     public float maxScore;
-    public int stars;
+    public int stars = 0;
 
     public Level()
     {
-        levelID = 0;
+        currentLevel = this;
+        levelID = 1;
         score = 0;
         stars = 0;
     }
+
     public Level(int levelID, int score)
     {
+        currentLevel = this;
         this.levelID = levelID;
         this.score = score;
-        stars = 0;
+        this.stars = 0;
     }
 
     public void AddStar(int combo)

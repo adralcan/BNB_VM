@@ -61,7 +61,8 @@ public class LevelManager : MonoBehaviour
         instance = this;
         iniciarObjetos();
         colocarObjetos();
-        if (accelerationIcon != null) { 
+        if (accelerationIcon != null)
+        {
             accelerationIcon.color = Color.clear;
             accelerationIcon.gameObject.SetActive(true);
         }
@@ -72,28 +73,9 @@ public class LevelManager : MonoBehaviour
         }
         nivelCompletado = false;
 
-
-        if (!SaveLoad.savedGame.playedLevels.ContainsKey(GameManager.instance.level)) {
-            new Level();
-            Level.currentLevel.levelID = GameManager.instance.level;
-            Level.currentLevel.score = 0;
-            Game.currentGame.stats.score = (int)Level.currentLevel.score;
-            Game.currentGame.stats.stars = Level.currentLevel.stars;
-            Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, Game.currentGame.stats);
-        }
-
-        else {
-            Debug.Log(GameManager.instance.level);
-            Level.currentLevel.levelID = GameManager.instance.level;
-            Level.currentLevel.score = SaveLoad.savedGame.playedLevels[GameManager.instance.level].score;
-            Level.currentLevel.stars = SaveLoad.savedGame.playedLevels[GameManager.instance.level].stars;
-        }
-        
-        SaveLoad.savedGame = Game.currentGame;
-        SaveLoad.Save();
-
         if (SceneManager.GetActiveScene().name == "Juego")
         {
+            GameManager.instance.level = Level.currentLevel.levelID;
             GameManager.instance.ReadLevel("mapdata" + GameManager.instance.level); //Esto le llama el GameManager, que carga el archivo de guardado
             Level.currentLevel.maxScore = (numBloques * numBloques) * 2 * Level.currentLevel.levelID;
             Debug.Log("Numero Nivel: " + Level.currentLevel.levelID);
@@ -166,7 +148,7 @@ public class LevelManager : MonoBehaviour
         gameField.transform.position = new Vector3(rend.bounds.min.x, rend.bounds.max.y, 0); //Esquina sup izq
 
         //Disparador
-        if(Disparador != null)
+        if (Disparador != null)
             Disparador.SetPosition(new Vector3(rend.bounds.center.x, rend.bounds.min.y, 0));
     }
 
@@ -213,34 +195,36 @@ public class LevelManager : MonoBehaviour
 
         //Si aun quedan bolas desperdigadas de un disparo concreto, recogemos
         if (listaBolas.Count > 0 && numDisparos == iteracion)
-        {            
+        {
             //Si alguna pelota está fuera del gameField, la hacemos volver
-            for (int i = 0; i < listaBolas.Count; i++) {
+            for (int i = 0; i < listaBolas.Count; i++)
+            {
                 if (listaBolas[i].gameObject != null)
                 {
                     if (!dentroPantalla(listaBolas[i].transform.position))
                         listaBolas[i].MoveTo(Disparador.transform.position, 20, destruyePelota);
                     else
                     {
-                        listaBolas[i].GetRigidbody().velocity *= 1.5f;                        
+                        if (listaBolas[i].GetComponent<Rigidbody2D>() != null)
+                            listaBolas[i].GetRigidbody().velocity *= 1.5f;
                     }
                 }
             }
 
-            yield return iniciarContador(iteracion);            
+            yield return iniciarContador(iteracion);
         }
     }
 
     IEnumerator aclararImagen()
     {
-        bool termino = false;        
+        bool termino = false;
 
         while (!termino)
         {
             accelerationIcon.color = Color.Lerp(accelerationIcon.color, Color.clear, flashSpeed * Time.deltaTime);
 
             if (accelerationIcon.color == Color.clear)
-            {                
+            {
                 termino = true;
             }
 
@@ -255,7 +239,7 @@ public class LevelManager : MonoBehaviour
 
     public void llegadaPelota(Ball p)
     {
-        contTemporal++;        
+        contTemporal++;
 
         if (contTemporal == 1)
         { //Si es la primera pelota, guardas futura posicion del disparador               
@@ -268,8 +252,8 @@ public class LevelManager : MonoBehaviour
         {
             Disparador.SetContBolas(contTemporal);
             Disparador.SetPosition(Disparador.getPosAux());
-            contTemporal = 0;            
-            disparoIniciado = false;            
+            contTemporal = 0;
+            disparoIniciado = false;
 
             //Desplazamos los bloques
             for (int i = 0; i < listaBloques.Count; i++)
@@ -310,7 +294,8 @@ public class LevelManager : MonoBehaviour
     //Llama al MoveTo de todas las bolas en juego
     public void BotonVolverSpawner()
     {
-        if (listaBolas.Count > 0) {
+        if (listaBolas.Count > 0)
+        {
             RestartStatsSpawner();
 
             for (int i = 0; i < listaBolas.Count; i++)
@@ -319,21 +304,21 @@ public class LevelManager : MonoBehaviour
                     Destroy(listaBolas[i].GetRigidbody()); //Destruimos rigidBody para que no colisione camino de vuelta
 
                 listaBolas[i].MoveTo(Disparador.transform.position, 10, destruyePelota);
-            }            
+            }
 
             //Hacemos pasar el turno descendiendo los bloques
             for (int i = 0; i < listaBloques.Count; i++)
                 listaBloques[i].Descender();
 
-            Disparador.SetPosition(Disparador.getPosAux());            
+            Disparador.SetPosition(Disparador.getPosAux());
         }
     }
 
     public void destruyePelota(Ball p)
     {
         listaBolas.Remove(p);
-        Destroy(p.gameObject);       
-    }    
+        Destroy(p.gameObject);
+    }
 
     //Dado un vector, nos dice si esta dentro del gameField o no
     public bool dentroPantalla(Vector3 pos)
@@ -350,14 +335,14 @@ public class LevelManager : MonoBehaviour
         float currentRatio = (float)Screen.width / (float)Screen.height;
 
         if (currentRatio >= desiredRatio)
-        {            
+        {
             Camera.main.orthographicSize = TARGET_HEIGHT / 4 / PIXELS_TO_UNITS;
         }
         else
-        {            
+        {
             float differenceInSize = desiredRatio / currentRatio;
             Camera.main.orthographicSize = TARGET_HEIGHT / 4 / PIXELS_TO_UNITS * differenceInSize;
-        }        
+        }
     }
 
     public void SiguienteNivel()
@@ -367,30 +352,23 @@ public class LevelManager : MonoBehaviour
 
         // Serializacion
         if (SaveLoad.savedGame.playedLevels.ContainsKey(GameManager.instance.level))
-        {            
-            if (SaveLoad.savedGame.playedLevels[GameManager.instance.level].score < Level.currentLevel.score) {
+        {
+            if (SaveLoad.savedGame.playedLevels[GameManager.instance.level].score < Level.currentLevel.score)
+            {
                 SaveLoad.savedGame.stats.score = (int)Level.currentLevel.score;
                 SaveLoad.savedGame.stats.stars = Level.currentLevel.stars;
                 SaveLoad.savedGame.playedLevels[GameManager.instance.level] = SaveLoad.savedGame.stats;
                 SaveLoad.Save();
             }
         }
-        
+
         GameManager.instance.level++;
-        
-        // Serializacion
-        // Nuevo nivel, stats del mismo a 0
-        Level.currentLevel.levelID = GameManager.instance.level;
-        Level.currentLevel.score = 0;
-        Level.currentLevel.stars = 0;
-        Game.currentGame.stats.score = (int)Level.currentLevel.score;
-        Game.currentGame.stats.stars = Level.currentLevel.stars;
-        Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, Game.currentGame.stats);
+
+        NuevoNivelSerializable(GameManager.instance.level);
         Game.currentGame.monedas += 50;
         SaveLoad.savedGame = Game.currentGame;
         SaveLoad.Save();
-        //
-        
+
         Alertar(false);
         SceneManager.LoadScene("Juego", LoadSceneMode.Single);
     }
@@ -401,10 +379,35 @@ public class LevelManager : MonoBehaviour
         Disparador.SetContBolas(bolasIniciales);
         Level.currentLevel.levelID = GameManager.instance.level;
         Level.currentLevel.score = 0;
-        
+
         Alertar(false);
         SceneManager.LoadScene("Juego", LoadSceneMode.Single);
         Time.timeScale = 1;
+    }
+
+    public void NuevoNivelSerializable(int nivel)
+    {
+        GameManager.instance.level = nivel;
+        // Serializacion
+        if (SaveLoad.Load())
+        {
+            Level.currentLevel = new Level(GameManager.instance.level, 0);
+            Game.currentGame.stats.score = (int)Level.currentLevel.score;
+            Game.currentGame.stats.stars = Level.currentLevel.stars;
+            if (!SaveLoad.savedGame.playedLevels.ContainsKey(GameManager.instance.level))
+            {
+                Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, Game.currentGame.stats);
+            }
+        }
+        else
+        {
+            Level.currentLevel = new Level(GameManager.instance.level, 0);
+            Game.currentGame.stats.score = (int)Level.currentLevel.score;
+            Game.currentGame.stats.stars = Level.currentLevel.stars;
+            Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, Game.currentGame.stats);
+        }
+        SaveLoad.savedGame = Game.currentGame;
+        SaveLoad.Save();
     }
 
     public void CargarNivel(int nivel)
@@ -413,12 +416,10 @@ public class LevelManager : MonoBehaviour
         //RestartStatsSpawner();
         //Disparador.SetContBolas(bolasIniciales);
         Debug.Log("EL nivel que cargo: " + nivel); //Esto esta bien
-        new Level(nivel, 0);
-        //GameManager.instance.level = Level.currentLevel.levelID;
-
-
+        NuevoNivelSerializable(nivel);
         Alertar(false);
         SceneManager.LoadScene("Juego", LoadSceneMode.Single);
+
     }
 
     public void TogglePause()
