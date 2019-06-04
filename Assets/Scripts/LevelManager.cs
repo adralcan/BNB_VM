@@ -61,9 +61,10 @@ public class LevelManager : MonoBehaviour
         instance = this;
         iniciarObjetos();
         colocarObjetos();
-        accelerationIcon.color = Color.clear;
-        accelerationIcon.gameObject.SetActive(true);
-
+        if (accelerationIcon != null) { 
+            accelerationIcon.color = Color.clear;
+            accelerationIcon.gameObject.SetActive(true);
+        }
         if (pointsBar != null)
         {
             pointsBar.fillAmount = 0;
