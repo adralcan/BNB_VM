@@ -491,7 +491,6 @@ public class LevelManager : MonoBehaviour
     public void IrMenuSeleccion()
     {
         Destroy(gameObject);
-        Destroy(GameManager.instance.gameObject);
         SceneManager.LoadScene("Menu_Seleccion_Niveles");
         Time.timeScale = 1;
     }
