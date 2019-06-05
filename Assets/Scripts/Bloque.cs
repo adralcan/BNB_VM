@@ -177,15 +177,15 @@ public class Bloque : MonoBehaviour
             LevelManager.instance.numBloques--;
             Destroy(gameObject);
             Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
-            Debug.Log("Puntos: " + Level.currentLevel.score);
-            Debug.Log("Barra puntos: " + (Level.currentLevel.score / Level.currentLevel.maxScore));
+            //Debug.Log("Puntos: " + Level.currentLevel.score);
+            //Debug.Log("Barra puntos: " + (Level.currentLevel.score / Level.currentLevel.maxScore));
             LevelManager.instance.pointsBar.fillAmount = Level.currentLevel.score / Level.currentLevel.maxScore;
             LevelManager.instance.combo++;
             Level.currentLevel.AddStar(LevelManager.instance.combo);
-            if (LevelManager.instance.numBloques <= 0)
+
+            if (LevelManager.instance.listaBloques.Count <= 0)
             {
-                //Cambiar de nivel                
-                //LevelManager.instance.SiguienteNivel();
+                //Cambiar de nivel               
                 LevelManager.instance.nivelCompletado = true;
             }
         }
@@ -229,7 +229,7 @@ public class Bloque : MonoBehaviour
                 Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
                 LevelManager.instance.combo++;
                 Level.currentLevel.AddStar(LevelManager.instance.combo);
-                if (LevelManager.instance.numBloques <= 0)
+                if (LevelManager.instance.listaBloques.Count <= 0)
                 {
                     //Cambiar de nivel                   
                     LevelManager.instance.nivelCompletado = true;
