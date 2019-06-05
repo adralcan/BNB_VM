@@ -19,8 +19,10 @@ public class LevelManager : MonoBehaviour
     public Button returnBolasButton;
     public Text contPuntosText;
     public Image pointsBar;
+    public Image star;
     public Image accelerationIcon;
     public float flashSpeed = 5;
+    private int contStars = 3;
 
     public Sprite sprite;
     [HideInInspector] public GameObject spriteField;
@@ -49,25 +51,12 @@ public class LevelManager : MonoBehaviour
     [HideInInspector] public int contTemporal = 0;
     [HideInInspector] public int bolasIniciales = 0;
     [HideInInspector] public int numDisparos = 0; //Controlar el num de disparos por partida   
-    
+
     public Text powerUpText;
 
     [HideInInspector] public int combo = 0;
 
     [HideInInspector] public bool nivelCompletado = false;
-
-    /*void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
-    }*/
 
     // Use this for initialization
     void Start()
@@ -88,7 +77,7 @@ public class LevelManager : MonoBehaviour
             pauseMenu.SetActive(false);
         }
 
-        if(powerUpText != null)
+        if (powerUpText != null)
             powerUpText.text = Game.currentGame.powerUp.ToString();
 
         nivelCompletado = false;
@@ -119,7 +108,7 @@ public class LevelManager : MonoBehaviour
                 if (listaBloques[i] != null)
                 {
                     listaBloques[i].contGolpes -= 4;
-                    listaBloques[i].AddText(listaBloques[i].contGolpes.ToString());                    
+                    listaBloques[i].AddText(listaBloques[i].contGolpes.ToString());
                     listaBloques[i].cambiarColor();
                     listaBloques[i].Shake();
                     listaBloques[i].comprobarGolpes();
@@ -148,7 +137,7 @@ public class LevelManager : MonoBehaviour
     private void FixedUpdate()
     {
         ResizeCamera();
-        if(contPuntosText != null)
+        if (contPuntosText != null)
             contPuntosText.text = Level.currentLevel.score.ToString();
 
         if (!GameManager.instance.anuncioActivo)
@@ -273,7 +262,7 @@ public class LevelManager : MonoBehaviour
             }
 
             yield return new WaitForFixedUpdate();
-        }       
+        }
 
         yield break;
     }
@@ -292,7 +281,7 @@ public class LevelManager : MonoBehaviour
 
         if (Disparador.getNumBolas() <= 0 && contTemporal >= numBolasAux) //Si tiene las mismas o mas bolas que antes de iniciar el disparo, podrá volver a disparar
         {
-            Disparador.SetContBolas(contTemporal);            
+            Disparador.SetContBolas(contTemporal);
             Disparador.SetPosition(Disparador.getPosAux());
             contTemporal = 0;
             disparoIniciado = false;
@@ -354,11 +343,46 @@ public class LevelManager : MonoBehaviour
             for (int i = 0; i < listaBloques.Count; i++)
                 listaBloques[i].Descender();
 
-            Disparador.SetPosition(Disparador.getPosAux());            
+            Disparador.SetPosition(Disparador.getPosAux());
             returnBolasButton.gameObject.SetActive(false);
 
             if (nivelCompletado)
                 SiguienteNivel();
+        }
+    }
+
+    public void CreaEstrella()
+    {
+        if (Level.currentLevel.stars > 0 && contStars > 0)
+        {
+            
+            if (Level.currentLevel.stars == 1 && contStars == 3)
+            {
+                Image newobj = Instantiate(star);
+                newobj.transform.SetParent(pointsBar.transform);
+                newobj.rectTransform.localScale = new Vector3(1.2f, 1.2f, 0);
+                Debug.Log("Tamaño: " + pointsBar.rectTransform.sizeDelta.x + ", posicion: " + pointsBar.rectTransform.sizeDelta.x * 0.2f);
+                newobj.rectTransform.localPosition = new Vector3(pointsBar.rectTransform.sizeDelta.x * 0.2f, 0, 0);
+                contStars--;
+            }
+
+            else if (Level.currentLevel.stars == 2 && contStars == 2)
+            {
+                Image newobj = Instantiate(star);
+                newobj.transform.SetParent(pointsBar.transform);
+                newobj.rectTransform.localScale = new Vector3(1.2f, 1.2f, 0);
+                newobj.rectTransform.localPosition = new Vector3(pointsBar.rectTransform.sizeDelta.x * 0.7f, 0, 0);
+                contStars--;
+            }
+
+            else if (Level.currentLevel.stars == 3 && contStars == 1)
+            {
+                Image newobj = Instantiate(star);
+                newobj.transform.SetParent(pointsBar.transform);
+                newobj.rectTransform.localScale = new Vector3(1.2f, 1.2f, 0);
+                newobj.rectTransform.localPosition = new Vector3(pointsBar.rectTransform.sizeDelta.x, 0, 0);
+                contStars--;
+            }
         }
     }
 
@@ -412,7 +436,7 @@ public class LevelManager : MonoBehaviour
             {
                 SaveLoad.savedGame.score = (int)Level.currentLevel.score;
                 SaveLoad.savedGame.stars = Level.currentLevel.stars;
-                SaveLoad.savedGame.playedLevels[GameManager.instance.level] = new int[] { SaveLoad.savedGame.score, SaveLoad.savedGame.stars};
+                SaveLoad.savedGame.playedLevels[GameManager.instance.level] = new int[] { SaveLoad.savedGame.score, SaveLoad.savedGame.stars };
                 SaveLoad.Save();
             }
         }

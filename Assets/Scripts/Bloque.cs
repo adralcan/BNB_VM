@@ -179,9 +179,11 @@ public class Bloque : MonoBehaviour
             Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
             Debug.Log("Puntos: " + Level.currentLevel.score);
             Debug.Log("Barra puntos: " + (Level.currentLevel.score / Level.currentLevel.maxScore));
-            LevelManager.instance.pointsBar.fillAmount = Level.currentLevel.score / Level.currentLevel.maxScore;
+            
             LevelManager.instance.combo++;
             Level.currentLevel.AddStar();
+            LevelManager.instance.pointsBar.fillAmount = Level.currentLevel.score / Level.currentLevel.maxScore;
+            LevelManager.instance.CreaEstrella();
             if (LevelManager.instance.numBloques <= 0)
             {
                 //Cambiar de nivel               
