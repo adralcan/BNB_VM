@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.45114523, g: 0.49975878, b: 0.56766486, a: 1}
+  m_IndirectSpecularColor: {r: 0.45114553, g: 0.49975944, b: 0.56766605, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -989,7 +989,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 51449942}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1123,6 +1123,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anuncioActivo: 0
   level: 1
+  currentGame:
+    score: 0
+    stars: 0
+    stats: 0000000000000000
 --- !u!4 &909840486
 Transform:
   m_ObjectHideFlags: 0
@@ -1395,6 +1399,7 @@ MonoBehaviour:
   backGround: {fileID: 1266998093}
   spriteDisparador: {fileID: 0}
   pauseMenu: {fileID: 0}
+  returnBolasButton: {fileID: 0}
   contPuntosText: {fileID: 0}
   pointsBar: {fileID: 0}
   accelerationIcon: {fileID: 0}
@@ -1422,6 +1427,7 @@ MonoBehaviour:
   contTemporal: 0
   bolasIniciales: 0
   numDisparos: 0
+  powerUpText: {fileID: 0}
   combo: 0
   nivelCompletado: 0
 --- !u!4 &1127344523

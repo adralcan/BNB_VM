@@ -45,8 +45,7 @@ public class UnityAdsButton : MonoBehaviour
             Debug.Log("Video completed - Offer a reward to the player");
             GameManager.instance.anuncioActivo = false;
 
-            Game.currentGame.monedas += 100;
-            SaveLoad.savedGame = Game.currentGame;
+            GameManager.instance.currentGame.monedas += 100;
             SaveLoad.Save();
         }
         else if (result == ShowResult.Skipped)

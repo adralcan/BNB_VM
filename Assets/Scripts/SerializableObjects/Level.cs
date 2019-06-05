@@ -2,18 +2,15 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Level
+public class Level : System.Object
 {
-    public static Level currentLevel; //Referencia estatica a una instancia de la clase
-
-    public int levelID = 1;
-    public float score = 0; //Lo necesito float para la barra de puntos
-    public float maxScore;
-    public int stars = 0;
+    public int levelID { get; set; }
+    public float score { get; set; }//Lo necesito float para la barra de puntos
+    public float maxScore { get; set; }
+    public int stars { get; set; }
 
     public Level()
     {
-        currentLevel = this;
         levelID = 1;
         score = 0;
         stars = 0;
@@ -21,15 +18,13 @@ public class Level
 
     public Level(int levelID, int score)
     {
-        currentLevel = this;
         this.levelID = levelID;
         this.score = score;
         this.stars = 0;
     }
 
-    public void AddStar(int combo)
+    public void AddStar()
     {
-
         if (stars < 3)
         {
             if (stars < 2)

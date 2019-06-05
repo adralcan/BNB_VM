@@ -9,10 +9,9 @@ public class PowerUpControl : MonoBehaviour {
 
 	public void ActivarPowerUp() {
 
-        if (Game.currentGame.monedas >= 50)
+        if (GameManager.instance.currentGame.monedas >= 50)
         {
-            Game.currentGame.monedas -= 50;
-            SaveLoad.savedGame = Game.currentGame;
+            GameManager.instance.currentGame.monedas -= 50;
             SaveLoad.Save();
             //M-top        
             Renderer rend = LevelManager.instance.spriteField.GetComponent<Renderer>();
