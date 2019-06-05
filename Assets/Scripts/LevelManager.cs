@@ -89,16 +89,16 @@ public class LevelManager : MonoBehaviour
         }
 
         if(powerUpText != null)
-            powerUpText.text = GameManager.instance.currentGame.powerUp.ToString();
+            powerUpText.text = Game.currentGame.powerUp.ToString();
 
         nivelCompletado = false;
 
         if (SceneManager.GetActiveScene().name == "Juego")
         {
-            GameManager.instance.level = GameManager.instance.currentLevel.levelID;
+            GameManager.instance.level = Level.currentLevel.levelID;
             GameManager.instance.ReadLevel("mapdata" + GameManager.instance.level); //Esto le llama el GameManager, que carga el archivo de guardado
-            GameManager.instance.currentLevel.maxScore = (numBloques * numBloques) * 2 * GameManager.instance.currentLevel.levelID;
-            Debug.Log("Numero Nivel: " + GameManager.instance.currentLevel.levelID);
+            Level.currentLevel.maxScore = (numBloques * numBloques) * 2 * Level.currentLevel.levelID;
+            Debug.Log("Numero Nivel: " + Level.currentLevel.levelID);
             numBolasAux = Disparador.getNumBolas(); //Cogemos el numero de bolas antes de disparar
             bolasIniciales = numBolasAux;
             Disparador.SetPosAux(Disparador.transform.position);
@@ -109,10 +109,10 @@ public class LevelManager : MonoBehaviour
 
     public void powerUpTerremoto()
     {
-        if (GameManager.instance.currentGame.powerUp > 0)
+        if (Game.currentGame.powerUp > 0)
         {
-            GameManager.instance.currentGame.powerUp--;
-            powerUpText.text = GameManager.instance.currentGame.powerUp.ToString();
+            Game.currentGame.powerUp--;
+            powerUpText.text = Game.currentGame.powerUp.ToString();
 
             for (int i = 0; i < listaBloques.Count; i++)
             {
@@ -149,7 +149,7 @@ public class LevelManager : MonoBehaviour
     {
         ResizeCamera();
         if(contPuntosText != null)
-            contPuntosText.text = GameManager.instance.currentLevel.score.ToString();
+            contPuntosText.text = Level.currentLevel.score.ToString();
 
         if (!GameManager.instance.anuncioActivo)
         {
@@ -406,13 +406,13 @@ public class LevelManager : MonoBehaviour
         Disparador.SetContBolas(bolasIniciales);
 
         // Serializacion
-        if (GameManager.instance.currentGame.playedLevels.ContainsKey(GameManager.instance.level))
+        if (SaveLoad.savedGame.playedLevels.ContainsKey(GameManager.instance.level))
         {
-            if (GameManager.instance.currentGame.playedLevels[GameManager.instance.level][0] < GameManager.instance.currentLevel.score)
+            if (SaveLoad.savedGame.playedLevels[GameManager.instance.level][0] < Level.currentLevel.score)
             {
-                GameManager.instance.currentGame.stats[0] = (int)GameManager.instance.currentLevel.score;
-                GameManager.instance.currentGame.stats[1] = GameManager.instance.currentLevel.stars;
-                GameManager.instance.currentGame.playedLevels[GameManager.instance.level] = GameManager.instance.currentGame.stats;
+                SaveLoad.savedGame.score = (int)Level.currentLevel.score;
+                SaveLoad.savedGame.stars = Level.currentLevel.stars;
+                SaveLoad.savedGame.playedLevels[GameManager.instance.level] = new int[] { SaveLoad.savedGame.score, SaveLoad.savedGame.stars};
                 SaveLoad.Save();
             }
         }
@@ -420,7 +420,8 @@ public class LevelManager : MonoBehaviour
         GameManager.instance.level++;
 
         NuevoNivelSerializable(GameManager.instance.level);
-        GameManager.instance.currentGame.monedas += 50;
+        Game.currentGame.monedas += 50;
+        SaveLoad.savedGame = Game.currentGame;
         SaveLoad.Save();
 
         Alertar(false);
@@ -431,8 +432,8 @@ public class LevelManager : MonoBehaviour
     {
         RestartStatsSpawner();
         Disparador.SetContBolas(bolasIniciales);
-        GameManager.instance.currentLevel.levelID = GameManager.instance.level;
-        GameManager.instance.currentLevel.score = 0;
+        Level.currentLevel.levelID = GameManager.instance.level;
+        Level.currentLevel.score = 0;
 
         Alertar(false);
         SceneManager.LoadScene("Juego", LoadSceneMode.Single);
@@ -445,24 +446,25 @@ public class LevelManager : MonoBehaviour
         // Serializacion
         if (SaveLoad.Load())
         {
-            GameManager.instance.currentLevel = new Level(GameManager.instance.level, 0);
-            GameManager.instance.currentGame.stats[0] = (int)GameManager.instance.currentLevel.score;
-            GameManager.instance.currentGame.stats[1] = GameManager.instance.currentLevel.stars;
+            Level.currentLevel = new Level(GameManager.instance.level, 0);
+            Game.currentGame.score = (int)Level.currentLevel.score;
+            Game.currentGame.stars = Level.currentLevel.stars;
 
-            if (!GameManager.instance.currentGame.playedLevels.ContainsKey(GameManager.instance.level))
+            if (!SaveLoad.savedGame.playedLevels.ContainsKey(GameManager.instance.level))
             {
-                GameManager.instance.currentGame.playedLevels.Add(GameManager.instance.currentLevel.levelID, GameManager.instance.currentGame.stats);
+                Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, new int[] { Game.currentGame.score, Game.currentGame.stars });
             }
         }
         else
         {
-            GameManager.instance.currentLevel = new Level(GameManager.instance.level, 0);
-            GameManager.instance.currentGame.stats[0] = (int)GameManager.instance.currentLevel.score;
-            GameManager.instance.currentGame.stats[1] = GameManager.instance.currentLevel.stars;
+            Level.currentLevel = new Level(GameManager.instance.level, 0);
+            Game.currentGame.score = (int)Level.currentLevel.score;
+            Game.currentGame.stars = Level.currentLevel.stars;
 
-            GameManager.instance.currentGame.powerUp = 2; //2 PowerUps cuando empiezas una partida nueva
-            GameManager.instance.currentGame.playedLevels.Add(GameManager.instance.currentLevel.levelID, GameManager.instance.currentGame.stats);
+            Game.currentGame.powerUp = 2; //2 PowerUps cuando empiezas una partida nueva
+            Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, new int[] { Game.currentGame.score, Game.currentGame.stars });
         }
+        SaveLoad.savedGame = Game.currentGame;
         SaveLoad.Save();
     }
 

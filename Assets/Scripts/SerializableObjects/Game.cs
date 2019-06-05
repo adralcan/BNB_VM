@@ -7,15 +7,13 @@ using System.Runtime.Serialization;
                        // Podemos guardar todas las variables de este script.
 public class Game : System.Object
 {
+    public static Game currentGame; //Referencia estatica a una instancia de la clase
+
     // Las clases que queramos serializar
     // public Niveles nivelesJugados;
-  
-
-    public int score;
-    public int stars;
 
     // 1 Score 2 Stars
-    public int [] stats;
+    public int score, stars;
 
     public Dictionary<int, int[]> playedLevels;
     public int monedas { get; set; }
@@ -24,7 +22,8 @@ public class Game : System.Object
     public Game()
     {
         playedLevels = new Dictionary<int, int[]>();
-        stats = new int[2];
+        score = 0;
+        stars = 0;
         monedas = 0;
     }
 	

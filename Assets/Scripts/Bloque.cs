@@ -54,9 +54,9 @@ public class Bloque : MonoBehaviour
         {
             LevelManager.instance.listaBloques.Remove(this);
             Destroy(gameObject);
-            GameManager.instance.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
+            Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
             LevelManager.instance.combo++;
-            GameManager.instance.currentLevel.AddStar();
+            Level.currentLevel.AddStar();
             if (LevelManager.instance.listaBloques.Count <= 0)
             {
                 //Cambiar de nivel                
@@ -176,12 +176,12 @@ public class Bloque : MonoBehaviour
             LevelManager.instance.listaBloques.Remove(this);
             LevelManager.instance.numBloques--;
             Destroy(gameObject);
-            GameManager.instance.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
-            Debug.Log("Puntos: " + GameManager.instance.currentLevel.score);
-            Debug.Log("Barra puntos: " + (GameManager.instance.currentLevel.score / GameManager.instance.currentLevel.maxScore));
-            LevelManager.instance.pointsBar.fillAmount = GameManager.instance.currentLevel.score / GameManager.instance.currentLevel.maxScore;
+            Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
+            Debug.Log("Puntos: " + Level.currentLevel.score);
+            Debug.Log("Barra puntos: " + (Level.currentLevel.score / Level.currentLevel.maxScore));
+            LevelManager.instance.pointsBar.fillAmount = Level.currentLevel.score / Level.currentLevel.maxScore;
             LevelManager.instance.combo++;
-            GameManager.instance.currentLevel.AddStar();
+            Level.currentLevel.AddStar();
             if (LevelManager.instance.numBloques <= 0)
             {
                 //Cambiar de nivel               
@@ -225,9 +225,9 @@ public class Bloque : MonoBehaviour
             {
                 LevelManager.instance.listaBloques.Remove(this);
                 Destroy(gameObject);
-                GameManager.instance.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
+                Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
                 LevelManager.instance.combo++;
-                GameManager.instance.currentLevel.AddStar();
+                Level.currentLevel.AddStar();
                 if (LevelManager.instance.numBloques <= 0)
                 {
                     //Cambiar de nivel                   

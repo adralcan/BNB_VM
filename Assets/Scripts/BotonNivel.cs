@@ -14,16 +14,16 @@ public class BotonNivel : MonoBehaviour {
     {
         //Comprobar si este nivel esta desbloqueado
         //En funcion de esto, cambiar imagen y stats
-        if (!GameManager.instance.currentGame.playedLevels.ContainsKey(level))
+        if (!Game.currentGame.playedLevels.ContainsKey(level))
         {
             GetComponent<Button>().enabled = false; //No carga nivel 
             GetComponent<Image>().sprite = nivelBloqueado;
         }
         else
         {
-            GameManager.instance.currentGame.stats[0] = (int)GameManager.instance.currentGame.playedLevels[level][0];
-            GameManager.instance.currentGame.stats[1] = GameManager.instance.currentGame.playedLevels[level][1];
-            for (int i = 1; i <= GameManager.instance.currentGame.stats[1]; i++)
+            Game.currentGame.score = (int)Game.currentGame.playedLevels[level][0];
+            Game.currentGame.stars = Game.currentGame.playedLevels[level][1];
+            for (int i = 1; i <= Game.currentGame.stars; i++)
             {
                 Image newobj = Instantiate(star);
                 newobj.transform.SetParent(this.gameObject.transform);

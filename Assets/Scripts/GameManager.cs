@@ -14,8 +14,6 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public bool anuncioActivo = false; //Si está activo, no hacemos caso al input
 
     [HideInInspector] public int level  = 1;
-    [HideInInspector] public Level currentLevel;
-    [HideInInspector] public Game currentGame;
 
     // Use this for initialization
     void Awake() {        

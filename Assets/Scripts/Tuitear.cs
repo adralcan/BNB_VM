@@ -15,8 +15,8 @@ public class Tuitear : MonoBehaviour {
     
     public void Twittear ()
     {        
-        Application.OpenURL(TWITTER_ADDRESS + "?text=" + WWW.EscapeURL(textToDisplay) + 
-            GameManager.instance.currentLevel.score + WWW.EscapeURL(" puntos!") + "&amp;lang=" + WWW.EscapeURL(TWEET_LANGUAGE));
+        Application.OpenURL(TWITTER_ADDRESS + "?text=" + WWW.EscapeURL(textToDisplay) +
+            Level.currentLevel.score + WWW.EscapeURL(" puntos!") + "&amp;lang=" + WWW.EscapeURL(TWEET_LANGUAGE));
     }	
 
 }
