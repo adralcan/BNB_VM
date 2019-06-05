@@ -16,6 +16,8 @@ public class LevelManager : MonoBehaviour
     public GameObject backGround;
     public GameObject spriteDisparador;
     public GameObject pauseMenu;
+    public Button returnBolasButton;
+    public Text contPuntosText;
     public Image pointsBar;
     public Image accelerationIcon;
     public float flashSpeed = 5;
@@ -46,8 +48,9 @@ public class LevelManager : MonoBehaviour
     [HideInInspector] public int numBolasAux = 0;
     [HideInInspector] public int contTemporal = 0;
     [HideInInspector] public int bolasIniciales = 0;
-
-    [HideInInspector] public int numDisparos = 0; //Controlar el num de disparos por partida
+    [HideInInspector] public int numDisparos = 0; //Controlar el num de disparos por partida   
+    
+    public Text powerUpText;
 
     [HideInInspector] public int combo = 0;
 
@@ -71,6 +74,10 @@ public class LevelManager : MonoBehaviour
             pointsBar.fillAmount = 0;
             pauseMenu.SetActive(false);
         }
+
+        if(powerUpText != null)
+            powerUpText.text = Game.currentGame.powerUp.ToString();
+
         nivelCompletado = false;
 
         if (SceneManager.GetActiveScene().name == "Juego")
@@ -85,6 +92,27 @@ public class LevelManager : MonoBehaviour
         }
         Alertar(false);
         ResizeCamera();
+    }
+
+    public void powerUpTerremoto()
+    {
+        if (Game.currentGame.powerUp > 0)
+        {
+            Game.currentGame.powerUp--;
+            powerUpText.text = Game.currentGame.powerUp.ToString();
+
+            for (int i = 0; i < listaBloques.Count; i++)
+            {
+                if (listaBloques[i] != null)
+                {
+                    listaBloques[i].contGolpes -= 4;
+                    listaBloques[i].AddText(listaBloques[i].contGolpes.ToString());                    
+                    listaBloques[i].cambiarColor();
+                    listaBloques[i].Shake();
+                    listaBloques[i].comprobarGolpes();
+                }
+            }
+        }
     }
 
     //Aparece la pantalla en rojo
@@ -107,6 +135,9 @@ public class LevelManager : MonoBehaviour
     private void FixedUpdate()
     {
         ResizeCamera();
+        if(contPuntosText != null)
+            contPuntosText.text = Level.currentLevel.score.ToString();
+
         if (!GameManager.instance.anuncioActivo)
         {
             if (Input.GetButtonUp("Jump"))
@@ -190,8 +221,8 @@ public class LevelManager : MonoBehaviour
         yield return new WaitForSeconds(5);
 
         accelerationIcon.color = new Color(1, 1, 1, 0.7f);
-        StopCoroutine(aclararImagen());
-        StartCoroutine(aclararImagen());
+        StopCoroutine(imagenAceleracion());
+        StartCoroutine(imagenAceleracion());
 
         //Si aun quedan bolas desperdigadas de un disparo concreto, recogemos
         if (listaBolas.Count > 0 && numDisparos == iteracion)
@@ -199,23 +230,22 @@ public class LevelManager : MonoBehaviour
             //Si alguna pelota está fuera del gameField, la hacemos volver
             for (int i = 0; i < listaBolas.Count; i++)
             {
-                if (listaBolas[i].gameObject != null)
+                if (!dentroPantalla(listaBolas[i].transform.position))
+                    listaBolas[i].MoveTo(Disparador.transform.position, 20, destruyePelota);
+                else
                 {
-                    if (!dentroPantalla(listaBolas[i].transform.position))
-                        listaBolas[i].MoveTo(Disparador.transform.position, 20, destruyePelota);
-                    else
-                    {
-                        if (listaBolas[i].GetComponent<Rigidbody2D>() != null)
-                            listaBolas[i].GetRigidbody().velocity *= 1.5f;
-                    }
+                    if (listaBolas[i].GetComponent<Rigidbody2D>() != null)
+                        listaBolas[i].GetRigidbody().velocity *= 1.5f;
                 }
             }
 
             yield return iniciarContador(iteracion);
         }
+        else
+            yield break;
     }
 
-    IEnumerator aclararImagen()
+    IEnumerator imagenAceleracion()
     {
         bool termino = false;
 
@@ -223,18 +253,16 @@ public class LevelManager : MonoBehaviour
         {
             accelerationIcon.color = Color.Lerp(accelerationIcon.color, Color.clear, flashSpeed * Time.deltaTime);
 
-            if (accelerationIcon.color == Color.clear)
+            if (accelerationIcon.color == Color.clear || !disparoIniciado)
             {
+                accelerationIcon.color = Color.clear;
                 termino = true;
             }
 
             yield return new WaitForFixedUpdate();
-        }
+        }       
 
-        if (termino)
-            StopCoroutine(aclararImagen());
-
-        yield return new WaitForFixedUpdate();
+        yield break;
     }
 
     public void llegadaPelota(Ball p)
@@ -248,12 +276,13 @@ public class LevelManager : MonoBehaviour
 
         p.MoveTo(Disparador.posicionAux, 10, destruyePelota); //Cuando finalice llamamos a destruyepelota
 
-        if (Disparador.getNumBolas() <= 0 && contTemporal == numBolasAux) //Si tiene las mismas o mas bolas que antes de iniciar el disparo, podrá volver a disparar
+        if (Disparador.getNumBolas() <= 0 && contTemporal >= numBolasAux) //Si tiene las mismas o mas bolas que antes de iniciar el disparo, podrá volver a disparar
         {
-            Disparador.SetContBolas(contTemporal);
+            Disparador.SetContBolas(contTemporal);            
             Disparador.SetPosition(Disparador.getPosAux());
             contTemporal = 0;
             disparoIniciado = false;
+            returnBolasButton.gameObject.SetActive(false);
 
             //Desplazamos los bloques
             for (int i = 0; i < listaBloques.Count; i++)
@@ -270,6 +299,7 @@ public class LevelManager : MonoBehaviour
 
     public void iniciarDisparo()
     {
+        returnBolasButton.gameObject.SetActive(true);
         disparoIniciado = true;
         numDisparos++;
         StopCoroutine(iniciarContador(numDisparos));
@@ -303,14 +333,18 @@ public class LevelManager : MonoBehaviour
                 if (listaBolas[i].GetRigidbody() != null)
                     Destroy(listaBolas[i].GetRigidbody()); //Destruimos rigidBody para que no colisione camino de vuelta
 
-                listaBolas[i].MoveTo(Disparador.transform.position, 10, destruyePelota);
+                listaBolas[i].MoveTo(Disparador.posicionAux, 10, destruyePelota);
             }
 
             //Hacemos pasar el turno descendiendo los bloques
             for (int i = 0; i < listaBloques.Count; i++)
                 listaBloques[i].Descender();
 
-            Disparador.SetPosition(Disparador.getPosAux());
+            Disparador.SetPosition(Disparador.getPosAux());            
+            returnBolasButton.gameObject.SetActive(false);
+
+            if (nivelCompletado)
+                SiguienteNivel();
         }
     }
 
@@ -318,6 +352,13 @@ public class LevelManager : MonoBehaviour
     {
         listaBolas.Remove(p);
         Destroy(p.gameObject);
+
+        if (Disparador.getNumBolas() <= 0 && contTemporal >= numBolasAux)
+        {
+            //Pasamos de nivel cuando todas las bolas han llegado al origen de nuevo
+            if (nivelCompletado)
+                SiguienteNivel();
+        }
     }
 
     //Dado un vector, nos dice si esta dentro del gameField o no
@@ -404,6 +445,7 @@ public class LevelManager : MonoBehaviour
             Level.currentLevel = new Level(GameManager.instance.level, 0);
             Game.currentGame.stats.score = (int)Level.currentLevel.score;
             Game.currentGame.stats.stars = Level.currentLevel.stars;
+            Game.currentGame.powerUp = 2; //2 PowerUps cuando empiezas una partida nueva
             Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, Game.currentGame.stats);
         }
         SaveLoad.savedGame = Game.currentGame;

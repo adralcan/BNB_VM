@@ -21,6 +21,7 @@ public class Game {
 
     public Dictionary<int, Puntuacion> playedLevels;
     public int monedas;
+    public int powerUp; //Numero de veces que podemos usar el powerUp
 
     public Game()
     {

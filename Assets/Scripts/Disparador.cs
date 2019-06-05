@@ -9,7 +9,8 @@ public class Disparador : MonoBehaviour
 
     public int fuerza = 5;
     public int contBolas = 5;
-    private TextMesh bolasText;
+    public int bolasAntesDeDisparar = 50;
+    public TextMesh bolasText;
 
     [HideInInspector] public Vector3 posicionAux; //Auxiliar para cuando la primera bola cambie la posicion del disparador
 
@@ -19,14 +20,7 @@ public class Disparador : MonoBehaviour
     public float grosorLinea = 0.2f;
 
     Color c1 = Color.grey;
-    Color c2 = Color.cyan;
-
-    private void Awake()
-    {
-        if (gameObject.GetComponentInChildren<TextMesh>() != null)
-            bolasText = gameObject.GetComponentInChildren<TextMesh>();
-        else Debug.Log("No se encontro texto del disparador");
-    }
+    Color c2 = Color.cyan;   
 
     // Use this for initialization
     void Start()
@@ -44,7 +38,12 @@ public class Disparador : MonoBehaviour
             new GradientColorKey[] { new GradientColorKey(c2, 0.0f), new GradientColorKey(c1, 1.0f) },
             new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 1.0f) }
             );
-        lineRenderer.colorGradient = gradient;        
+        lineRenderer.colorGradient = gradient;
+
+        bolasText.transform.position = transform.position;
+        Vector3 aux = bolasText.transform.position;
+        aux.y += 0.5f;
+        bolasText.transform.position = aux;
     }
     
     void FixedUpdate()
@@ -84,9 +83,10 @@ public class Disparador : MonoBehaviour
                 {
                     mousePosition = new Vector2(mousePosition.x, transform.position.y + 0.7f);
                     direccion = mousePosition - transform.position;
-                    direccion = direccion.normalized;
+                    direccion = direccion.normalized;                    
                     StartCoroutine(Disparar());
                 }
+                bolasAntesDeDisparar = contBolas;
             }
         }
     }
@@ -98,7 +98,7 @@ public class Disparador : MonoBehaviour
     }
 
     IEnumerator Disparar()
-    {
+    {        
         yield return new WaitForSeconds(0.1f);
         if (contBolas > 0)
         {
@@ -117,9 +117,7 @@ public class Disparador : MonoBehaviour
             yield return StartCoroutine(Disparar());
         }
         else        
-            StopCoroutine(Disparar());            
-        
-        //SetContBolas(contBolas);
+            StopCoroutine(Disparar());
     }
 
     public void SetPosition(Vector3 pos)
@@ -130,11 +128,17 @@ public class Disparador : MonoBehaviour
 
     public void SetContBolas(int n)
     {
-        contBolas = n;
-        //Vector3 aux = posicionAux;
-        //aux.y += 0.5f;
-        //bolasText.transform.position = aux;
-        bolasText.text = n.ToString();        
+        contBolas = n;        
+        SetTexto(n);
+    }
+
+    public void SetTexto(int puntuacion)
+    {
+        bolasText.text = puntuacion.ToString();        
+        int numAux = puntuacion - bolasAntesDeDisparar; //Diferencia, num bolas nuevas
+
+        if (puntuacion > bolasAntesDeDisparar) 
+            bolasText.text = bolasAntesDeDisparar.ToString() + "+" + numAux.ToString();        
     }
 
     //Darle valor a la futura posicion cuando acabe el turno
@@ -142,6 +146,12 @@ public class Disparador : MonoBehaviour
     {
         posicionAux = new Vector3(aux.x, transform.position.y, 0);
         LevelManager.instance.spriteDisparador.transform.position = posicionAux;
+
+        //Posicion del texto
+        bolasText.transform.position = posicionAux;
+        Vector3 textoAux = bolasText.transform.position;
+        textoAux.y += 0.5f;
+        bolasText.transform.position = textoAux;
     }
 
     public Vector3 getPosAux()
