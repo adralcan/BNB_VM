@@ -28,7 +28,9 @@ UnityConnectSettings:
     m_TestMode: 0
     m_IosGameId: 
     m_AndroidGameId: 
-    m_GameIds: {}
-    m_GameId: 
+    m_GameIds:
+      AndroidPlayer: 2989616
+      iPhonePlayer: 2989617
+    m_GameId: 2989616
   PerformanceReportingSettings:
     m_Enabled: 0

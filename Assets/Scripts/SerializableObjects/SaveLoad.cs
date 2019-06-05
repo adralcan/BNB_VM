@@ -11,13 +11,18 @@ public static class SaveLoad {
     public static void Save()
     {
         BinaryFormatter bf = new BinaryFormatter(); // Gestiona el trabajo de serializacion
+        LevelManager.instance.debugText.text = "Constructora binary file";
         //Application.persistentDataPath is a string, so if you wanted you can put that into debug.log if you want to know where save games are located
-        FileStream file = File.Create(Application.persistentDataPath + "/savedGame.gd"); // puntero al archivo para poder enviar los datos
-                                                                                         // Unity cuenta con una ruta por defecto para almacenar
+        FileStream file = File.Create(Application.persistentDataPath + "/savedGame.gd"); // puntero al archivo para poder enviar los datos                                                                  // Unity cuenta con una ruta por defecto para almacenar
                                                                                          // los archivos del juego. Esta ruta se actualiza segun
                                                                                          // la plataforma para la que generemos el juego.
+
+        LevelManager.instance.debugText.text = "Creacion binary file";
+
         bf.Serialize(file, SaveLoad.savedGame);
+        LevelManager.instance.debugText.text = "Serializacion binary file";
         file.Close();
+        LevelManager.instance.debugText.text = "Cerrado binary file";
     }
 
     public static bool Load()

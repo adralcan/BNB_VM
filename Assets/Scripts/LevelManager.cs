@@ -24,6 +24,8 @@ public class LevelManager : MonoBehaviour
     public float flashSpeed = 5;
     private int contStars = 3;
 
+    public Text debugText;
+
     public Sprite sprite;
     [HideInInspector] public GameObject spriteField;
     GameObject muroIzquierdo;
@@ -82,7 +84,7 @@ public class LevelManager : MonoBehaviour
 
         nivelCompletado = false;
 
-        if (SceneManager.GetActiveScene().name == "Juego")
+        if (SceneManager.GetActiveScene().name == "Test")
         {
             GameManager.instance.level = Level.currentLevel.levelID;
             GameManager.instance.ReadLevel("mapdata" + GameManager.instance.level); //Esto le llama el GameManager, que carga el archivo de guardado
@@ -94,6 +96,8 @@ public class LevelManager : MonoBehaviour
         }
         Alertar(false);
         ResizeCamera();
+
+        //PruebaPartida();
     }
 
     public void powerUpTerremoto()
@@ -449,7 +453,7 @@ public class LevelManager : MonoBehaviour
         SaveLoad.Save();
 
         Alertar(false);
-        SceneManager.LoadScene("Juego", LoadSceneMode.Single);
+        SceneManager.LoadScene("Test", LoadSceneMode.Single);
     }
 
     public void ReiniciarNivel() //Aun no funciona bien
@@ -460,7 +464,7 @@ public class LevelManager : MonoBehaviour
         Level.currentLevel.score = 0;
 
         Alertar(false);
-        SceneManager.LoadScene("Juego", LoadSceneMode.Single);
+        SceneManager.LoadScene("Test", LoadSceneMode.Single);
         Time.timeScale = 1;
     }
 
@@ -468,6 +472,8 @@ public class LevelManager : MonoBehaviour
     {
         GameManager.instance.level = nivel;
         // Serializacion
+        Debug.Log("Antes del if" + Application.persistentDataPath);
+        debugText.text = "Antes del if " + Application.persistentDataPath;
         if (SaveLoad.Load())
         {
             Level.currentLevel = new Level(GameManager.instance.level, 0);
@@ -478,6 +484,7 @@ public class LevelManager : MonoBehaviour
             {
                 Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, new int[] { Game.currentGame.score, Game.currentGame.stars });
             }
+            Debug.Log("Final de load true");
         }
         else
         {
@@ -487,9 +494,12 @@ public class LevelManager : MonoBehaviour
 
             Game.currentGame.powerUp = 2; //2 PowerUps cuando empiezas una partida nueva
             Game.currentGame.playedLevels.Add(Level.currentLevel.levelID, new int[] { Game.currentGame.score, Game.currentGame.stars });
+            Debug.Log("Final de load false, nuevo nivel");
         }
         SaveLoad.savedGame = Game.currentGame;
+        Debug.Log("Asinacion");
         SaveLoad.Save();
+        Debug.Log("Final, save");
     }
 
     public void CargarNivel(int nivel)
@@ -498,9 +508,23 @@ public class LevelManager : MonoBehaviour
         //RestartStatsSpawner();
         //Disparador.SetContBolas(bolasIniciales);
         Debug.Log("EL nivel que cargo: " + nivel); //Esto esta bien
+        debugText.text = "Cargo el nivel:" + nivel;
         NuevoNivelSerializable(nivel);
+        debugText.text = "Nuevo nivel serializable";
         Alertar(false);
-        SceneManager.LoadScene("Juego", LoadSceneMode.Single);
+        debugText.text = "Voy a cargar OJO";
+        SceneManager.LoadScene("Test");
+    }
+
+    public void PruebaPartida()
+    {
+        LevelManager.instance.NuevoNivelSerializable(GameManager.instance.level);
+
+        if (SaveLoad.Load())
+            debugText.text = "Exito";
+        else
+            debugText.text = "No carga";
+
     }
 
     public void TogglePause()
