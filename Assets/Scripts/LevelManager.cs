@@ -286,6 +286,7 @@ public class LevelManager : MonoBehaviour
         { //Si es la primera pelota, guardas futura posicion del disparador               
             Disparador.SetPosAux(new Vector3(p.transform.position.x, Disparador.transform.position.y, 0));
         }
+        Disparador.SetTexto(contTemporal);
 
         p.MoveTo(Disparador.posicionAux, 10, destruyePelota); //Cuando finalice llamamos a destruyepelota
 

@@ -184,8 +184,7 @@ public class Bloque : MonoBehaviour
             GameManager.instance.currentLevel.AddStar();
             if (LevelManager.instance.numBloques <= 0)
             {
-                //Cambiar de nivel                
-                //LevelManager.instance.SiguienteNivel();
+                //Cambiar de nivel               
                 LevelManager.instance.nivelCompletado = true;
             }
         }
