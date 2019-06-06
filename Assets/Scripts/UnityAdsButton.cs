@@ -43,10 +43,7 @@ public class UnityAdsButton : MonoBehaviour
         ShowOptions options = new ShowOptions();
         options.resultCallback = HandleShowResult;
 
-        Advertisement.Show(placementId, options);       
-
-        if (LevelManager.instance.textoGemas != null)
-            LevelManager.instance.textoGemas.text = Game.currentGame.gemas.ToString();
+        Advertisement.Show(placementId, options); 
         
         GameManager.instance.anuncioActivo = true; 
     }
@@ -58,10 +55,14 @@ public class UnityAdsButton : MonoBehaviour
             Debug.Log("Video completed - Offer a reward to the player");
             GameManager.instance.anuncioActivo = false;
 
-            Game.currentGame.monedas += 100;
+            //Game.currentGame.monedas += 100;
+            Game.currentGame.gemas += 100;
+
+            if (LevelManager.instance.textoGemas != null)
+                LevelManager.instance.textoGemas.text = Game.currentGame.gemas.ToString();
 
             if (LevelManager.instance.gemasParticulas != null)
-                LevelManager.instance.gemasParticulas.Play();
+                LevelManager.instance.gemasParticulas.Play();                     
 
             SaveLoad.savedGame = Game.currentGame;
             SaveLoad.Save();
