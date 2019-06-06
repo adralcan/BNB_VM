@@ -21,9 +21,7 @@ public class PopulateGrid : MonoBehaviour {
         for (int i = 1; i <= numberToCreate; i++)
         {
             aux = Instantiate(prefab, transform);
-            aux.GetComponent<BotonNivel>().AsignarNivel(i);
-            //Asignar numero y nivel
-            //go.GetComponent<Image>().color = Random.ColorHSV();
+            aux.GetComponent<BotonNivel>().AsignarNivel(i);            
         }
     }
 

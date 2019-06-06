@@ -56,7 +56,7 @@ public class Disparador : MonoBehaviour
                 Vector3 mousePosition = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
 
                 //Si no hay tiro en curso y el disparo es por encima de la Y
-                if (!LevelManager.instance.disparoIniciado && mousePosition.y > transform.position.y + 0.7f)
+                if (!LevelManager.instance.disparoIniciado && LevelManager.instance.debajoMarcador(mousePosition.y) && mousePosition.y > transform.position.y + 0.7f)
                 {
                     //Dibujar linea
                     lineRenderer.SetPosition(0, new Vector3(transform.position.x, transform.position.y, 10));
@@ -78,12 +78,15 @@ public class Disparador : MonoBehaviour
 
                 //Comprobamos que el disparo sea por encima del spawner
                 if (mousePosition.y > transform.position.y + 0.7f)
-                    StartCoroutine(Disparar());
-                else if(mousePosition.y > transform.position.y - 0.5f) //Dispara en la pos mas alta
+                {
+                    if(LevelManager.instance.debajoMarcador(mousePosition.y))
+                        StartCoroutine(Disparar());
+                }
+                else if (mousePosition.y > transform.position.y - 0.5f) //Dispara en la pos mas alta
                 {
                     mousePosition = new Vector2(mousePosition.x, transform.position.y + 0.7f);
                     direccion = mousePosition - transform.position;
-                    direccion = direccion.normalized;                    
+                    direccion = direccion.normalized;
                     StartCoroutine(Disparar());
                 }
                 bolasAntesDeDisparar = contBolas;

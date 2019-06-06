@@ -17,7 +17,8 @@ public class Game : System.Object
 
     public Dictionary<int, int[]> playedLevels;
     public int monedas { get; set; }
-    public int powerUp { get; set; }//Numero de veces que podemos usar el powerUp
+    public int powerUp { get; set; } //Numero de veces que podemos usar el powerUp
+    public int gemas { get; set; } //Numero de veces que podemos usar el powerUp
 
     public Game()
     {
@@ -25,6 +26,7 @@ public class Game : System.Object
         score = 0;
         stars = 0;
         monedas = 0;
+        gemas = 0;
     }
 	
 }
