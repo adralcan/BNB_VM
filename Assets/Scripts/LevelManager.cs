@@ -183,7 +183,10 @@ public class LevelManager : MonoBehaviour
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
-                TogglePause();
+            {
+                if (SceneManager.GetActiveScene().name == "Game")                
+                    TogglePause();
+            }
         }
         destruirObjetos();
     }
@@ -539,7 +542,11 @@ public class LevelManager : MonoBehaviour
         if (aux)
             Time.timeScale = 1;
         else
+        {
             Time.timeScale = 0;
+            if (gemasParticulas != null)
+                gemasParticulas.Play();
+        }
     }
 
     public void IrMenuSeleccion()
