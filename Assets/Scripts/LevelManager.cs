@@ -245,7 +245,7 @@ public class LevelManager : MonoBehaviour
             Disparador.SetPosition(new Vector3(Disparador.transform.position.x, rend.bounds.min.y + 0.5f, 0));
     }
 
-    //Aceleramos las pelotas cada 6 segundos
+    //Aceleramos las pelotas cada 5 segundos
     IEnumerator iniciarContador(int iteracion)
     {
         yield return new WaitForSeconds(5);
@@ -257,15 +257,23 @@ public class LevelManager : MonoBehaviour
         //Si aun quedan bolas desperdigadas de un disparo concreto, recogemos
         if (listaBolas.Count > 0 && numDisparos == iteracion)
         {
-            //Si alguna pelota está fuera del gameField, la hacemos volver
+            //Si alguna pelota está fuera del gameField, la destruimos
             for (int i = 0; i < listaBolas.Count; i++)
             {
-                if (!dentroPantalla(listaBolas[i].transform.position))
-                    listaBolas[i].MoveTo(Disparador.transform.position, 20, destruyePelota);
+                if (!dentroPantalla(listaBolas[i].transform.position) && listaBolas[i] != null)
+                {
+                    listaBolas.Remove(listaBolas[i]);
+                    Destroy(listaBolas[i].gameObject);
+                    contTemporal++; //Para no desajustar el contador de bolas que hace poder reiniciar el disparo
+                }
                 else
                 {
                     if (listaBolas[i].GetComponent<Rigidbody2D>() != null)
-                        listaBolas[i].GetRigidbody().velocity *= 1.5f;
+                    {
+                        //Para que no se descontrole la velocidad de las bolas
+                        if (Mathf.Abs(listaBolas[i].GetRigidbody().velocity.x) < 60 && Mathf.Abs(listaBolas[i].GetRigidbody().velocity.y) < 60)
+                            listaBolas[i].GetRigidbody().velocity *= 1.5f;
+                    }
                 }
             }
 
@@ -313,6 +321,7 @@ public class LevelManager : MonoBehaviour
             Disparador.SetPosition(Disparador.getPosAux());
             contTemporal = 0;
             disparoIniciado = false;
+            
             returnBolasButton.gameObject.SetActive(false);
 
             //Desplazamos los bloques
@@ -389,7 +398,7 @@ public class LevelManager : MonoBehaviour
                 Image newobj = Instantiate(star);
                 newobj.transform.SetParent(pointsBar.transform);
                 newobj.rectTransform.localScale = new Vector3(1.2f, 1.2f, 0);
-                Debug.Log("Tamaño: " + pointsBar.rectTransform.sizeDelta.x + ", posicion: " + pointsBar.rectTransform.sizeDelta.x * 0.2f);
+                
                 newobj.rectTransform.localPosition = new Vector3(pointsBar.rectTransform.sizeDelta.x * 0.2f, 0, 0);
                 contStars--;
             }

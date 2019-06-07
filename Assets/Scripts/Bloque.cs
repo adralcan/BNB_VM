@@ -176,9 +176,7 @@ public class Bloque : MonoBehaviour
             LevelManager.instance.listaBloques.Remove(this);
             LevelManager.instance.numBloques--;
             Destroy(gameObject);
-            Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));
-            //Debug.Log("Puntos: " + Level.currentLevel.score);
-            //Debug.Log("Barra puntos: " + (Level.currentLevel.score / Level.currentLevel.maxScore));
+            Level.currentLevel.score += (10 + (10 * LevelManager.instance.combo));            
             
             LevelManager.instance.combo++;
             Level.currentLevel.AddStar();

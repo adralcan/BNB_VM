@@ -7,8 +7,7 @@ public class BotonNivel : MonoBehaviour {
 
     [HideInInspector] public int nivel = 0;
     public Sprite nivelBloqueado;
-    public Image star;
-    
+    public Image star;    
 
     public void AsignarNivel(int level)
     {
@@ -38,8 +37,7 @@ public class BotonNivel : MonoBehaviour {
     }
 
     public void CargarNivel()
-    {
-        Debug.Log("NIVEL: " + nivel);
+    {        
         LevelManager.instance.CargarNivel(nivel);
     }
 }
